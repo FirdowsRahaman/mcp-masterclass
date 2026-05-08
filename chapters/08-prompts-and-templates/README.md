@@ -54,11 +54,17 @@ def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
 ```
 
 ## Try It Yourself
-1. Implement the `review_code` prompt above.
-2. Run your server using the MCP Inspector.
-3. Navigate to the **Prompts** tab.
-4. Fill in the `language` argument and click "Get Prompt". 
-5. Notice how the server constructs the precise message structure that the AI model will eventually receive!
+Let's see how the server dynamically constructs instructions.
+
+1. Save the code example above as `server.py`.
+2. Start the Inspector:
+   ```bash
+   npx @modelcontextprotocol/inspector python server.py
+   ```
+3. Open the Inspector UI in your browser.
+4. Navigate to the **Prompts** tab. You should see `review_code` listed.
+5. Click **Get Prompt** and fill in the `language` argument (e.g., `Python`).
+6. Click **Execute**. Notice how the server takes your argument and constructs the precise, structured `User` message payload that the AI model will eventually receive!
 
 ## Checkpoint
 1. What is the fundamental difference between an MCP Tool and an MCP Prompt?

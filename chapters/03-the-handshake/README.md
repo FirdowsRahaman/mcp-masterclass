@@ -1,4 +1,4 @@
-# Chapter 3: The Handshake & Handshake
+# Chapter 3: The Handshake & Protocol Lifecycle
 
 ## Objective
 In 10 minutes, you will understand:
@@ -12,6 +12,11 @@ MCP follows a well-defined lifecycle for every interaction. To understand the ex
 
 ### The "Restaurant" Analogy
 **The MCP Handshake is like ordering food at a restaurant.**
+
+<div align="center">
+  <img src="../../assets/restaurant-analogy.png" alt="Restaurant Analogy" width="80%">
+</div>
+
 - **The Initialization (Reading the Menu)**: The MCP Client (Waiter) connects to the Server (Kitchen) and asks "What can you do?" The Server replies with its Capabilities (The Menu).
 - **The Execution (Placing the Order)**: The AI Agent (Customer) decides it wants a specific tool. The Client (Waiter) takes this exact JSON-RPC order to the Server (Kitchen).
 - **The Result (Serving the Food)**: The Server executes the Python code and hands the raw data back to the Client, which serves it to the Agent.
@@ -25,19 +30,43 @@ MCP follows a well-defined lifecycle for every interaction. To understand the ex
 
 ## How It Works
 
-### Protocol Sequence Diagram
-```
-Client                Host                Server
- |                    |                    |
- |-- Initialize ------>|                    |
- |<----- Ready --------|                    |
- |       |            |-- Capabilities --->|
- |       |            |<-- Capabilities ---|
- |       |            |-- Tool Discovery ->|
- |       |            |<-- Tool Catalog ----|
- |------- Tool Request ------------------->|
- |<------ Tool Response ------------------|
- |                    |                    |
+### Protocol Lifecycle & Ecosystem
+<div align="center">
+  <img src="../../assets/mcp-ecosystem.png" alt="MCP Ecosystem & Lifecycle Diagram" width="100%">
+</div>
+
+### Detailed Sequence Flow
+```mermaid
+sequenceDiagram
+    autonumber
+    
+    box rgb(40, 50, 70) MCP Host Application
+    participant A as AI Agent
+    participant C as MCP Client
+    end
+    
+    participant S as MCP Server
+
+    rect rgb(20, 40, 60)
+    note right of C: Phase 1: Initialization
+    C->>S: initialize (Protocol Version, Client Capabilities)
+    S-->>C: result (Server Capabilities)
+    C->>S: notifications/initialized (Ack)
+    end
+
+    rect rgb(30, 50, 40)
+    note right of C: Phase 2: Tool Discovery
+    C->>S: tools/list
+    S-->>C: result (List of Tools & Schemas)
+    end
+
+    rect rgb(60, 30, 60)
+    note right of A: Phase 3: Execution
+    A->>C: LLM Request: "Use Tool X"
+    C->>S: tools/call (JSON-RPC arguments)
+    S-->>C: result (Execution Output)
+    C-->>A: Context Injected: "Result is Y"
+    end
 ```
 
 ### Message Structure
@@ -63,41 +92,76 @@ Client                Host                Server
 | Ephemeral | Context maintained per session | Multi-turn interactions |
 | Persistent | Context stored externally | Long-running workflows |
 
-## Code Example
-```python
-# Protocol Lifecycle Implementation
-async def handle_handshake(client):
-    # Initialize phase
-    init = await client.receive()
-    if init["type"] != "initialize":
-        await client.send({"error": "Invalid handshake"})
-        return
+## Under the Hood: The JSON-RPC Traffic
+If you are using an SDK like FastMCP, **you do not write the handshake code yourself**. The SDK handles the entire lifecycle automatically.
 
-    # Capabilities exchange
-    await client.send({"type": "ready"})
-    capabilities = await client.receive()
-    
-    # Tool discovery
-    tool_catalog = server.get_tool_catalog()
-    await client.send({"type": "tool_catalog", "payload": tool_catalog})
+However, if you look at the raw traffic in the MCP Inspector, this is exactly what the 3-step initialization handshake looks like over the wire:
 
-    # Main execution loop
-    while True:
-        request = await client.receive()
-        if request["type"] == "tool_request":
-            response = await execute_tool(request)
-            await client.send(response)
+**1. Client sends `initialize`:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {},
+    "clientInfo": {
+      "name": "Claude Desktop",
+      "version": "1.0.0"
+    }
+  }
+}
 ```
 
+**2. Server responds with its Capabilities:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {
+      "tools": {},
+      "resources": {}
+    },
+    "serverInfo": {
+      "name": "Calculator Server",
+      "version": "1.0.0"
+    }
+  }
+}
+```
+
+**3. Client sends an acknowledgement:**
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized"
+}
+```
+*After this sequence, the connection is established and the Host can start requesting the actual list of tools!*
+
+### What Exactly Gets Negotiated?
+During this handshake, the Client and Server establish their boundaries. This is crucial because not all Hosts support all MCP features!
+
+- **Client Capabilities**: The Host tells the Server what it allows. For example, does the Host allow the server to understand the user's workspace directory (`roots`)? Does it allow the server to trigger a sub-LLM call (`sampling`)? 
+- **Server Capabilities**: The Server tells the Host what it can provide. For example: *"I have `tools` you can call, and `resources` you can read, but I do not have any `prompts`."*
+
+If the Host (like Claude Desktop) doesn't support a specific feature that your Server requires, the handshake is the exact moment your server discovers this so it can gracefully degrade or throw an error.
 ## Try It Yourself
 
-1. Start MCP Inspector
-2. Run the Chapter 1 calculator server
-3. Initiate a tool request and observe:
-   - Handshake sequence in Inspector
-   - Message structure details
-   - Context propagation between requests
-4. Modify the server to use persistent state and observe changes
+Let's observe this exact 3-step handshake in reality.
+
+1. Open your terminal and start the inspector with your Chapter 1 calculator server:
+   ```bash
+   npx @modelcontextprotocol/inspector python server.py
+   ```
+2. Open the Inspector's browser UI (usually `http://localhost:5173`).
+3. Click on the **Notifications** or **Messages** tab in the Inspector.
+4. Scroll to the very top of the logs.
+5. You will see the exact `initialize` request, the server's `result` response, and the `notifications/initialized` message.
+6. Expand the JSON payload of the Server's response and notice how it broadcasts its `tools` capability to the Host!
 
 ## Checkpoint
 1. What happens if capabilities negotiation fails during handshake?

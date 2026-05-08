@@ -13,7 +13,7 @@ mkdir -p mcp-lab-04
 cd mcp-lab-04
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp mcp-inspector
+pip install mcp
 ```
 
 ## Step 2: Implementing a Prompt Server
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
 1. Start the Inspector:
    ```bash
-   mcp-inspector python prompt_server.py
+   npx @modelcontextprotocol/inspector python prompt_server.py
    ```
 2. Open the Inspector in your browser.
 3. Navigate to the **Prompts** tab. You should see your `review_code` prompt listed.

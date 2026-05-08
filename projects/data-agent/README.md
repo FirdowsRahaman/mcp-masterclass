@@ -1,5 +1,9 @@
 # Capstone Project: Data Agent
 
+<div align="center">
+  <img src="../../assets/data-agent.png" alt="Data Agent Architecture" width="100%">
+</div>
+
 ## Overview
 The **Data Agent** turns an LLM into an expert Data Analyst. By utilizing MCP, we provide the model with a live view of database schemas via **Resources**, and the ability to execute read-only queries via **Tools**. This prevents the LLM from hallucinating table names or columns, leading to highly accurate SQL generation.
 
@@ -95,12 +99,12 @@ if __name__ == "__main__":
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp pandas tabulate
+pip install mcp pandas tabulate
 ```
 
 ### 2. Connect via MCP Inspector
 ```bash
-mcp-inspector python data_server.py
+npx @modelcontextprotocol/inspector python data_server.py
 ```
 
 ### 3. Usage Flow

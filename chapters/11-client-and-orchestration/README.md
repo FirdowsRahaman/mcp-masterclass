@@ -45,16 +45,31 @@ The architecture consists of several key layers:
 **The MCP Layer** acts as the strict protocol boundary between the Agent Orchestration layer and the Bottom Tooling layer, ensuring all tool routing and validation is securely standardized.
 
 ### Multi-Server Architecture
-```
-┌─────────────────────────────────────────────────────┐
-│                 Agent Orchestrator                  │
-├─────────────────┬─────────────────┬─────────────────┤
-│  Routing Logic  │  State Manager  │  Aggregator     │
-└────────┬────────┴────────┬────────┴────────┬────────┘
-         │                 │                 │
-┌────────▼────────┐ ┌──────▼────────┐ ┌──────▼────────┐
-│  Server A (DB)  │ │ Server B (FS) │ │ Server C (API)│
-└─────────────────┘ └───────────────┘ └───────────────┘
+```mermaid
+graph TD
+    classDef orchestrator fill:#2d3748,stroke:#4a5568,stroke-width:2px,color:#fff
+    classDef server fill:#1a202c,stroke:#3182ce,stroke-width:2px,color:#fff
+    classDef boundary fill:none,stroke:#4a5568,stroke-width:2px,stroke-dasharray: 5 5
+
+    subgraph Host["Host Application Boundary"]
+        O["Agent Orchestrator"]:::orchestrator
+        R["Routing Logic"]:::orchestrator
+        S["State Manager"]:::orchestrator
+        A["Capabilities Aggregator"]:::orchestrator
+        O --> R
+        O --> S
+        O --> A
+    end
+
+    DB["Server A (Database)"]:::server
+    FS["Server B (File System)"]:::server
+    API["Server C (External API)"]:::server
+
+    R <-->|"JSON-RPC / stdio"| DB
+    R <-->|"JSON-RPC / stdio"| FS
+    R <-->|"JSON-RPC / sse"| API
+    
+    class Host boundary
 ```
 
 ### Routing Strategies
@@ -71,55 +86,79 @@ The architecture consists of several key layers:
 4. **Execute & Route**: Orchestrator routes specific tool calls to the appropriate servers.
 5. **Synthesize**: Agent combines the results from multiple servers into a final response.
 
-### Code Example
-> [!NOTE]
-> *This example uses conceptual pseudo-code (`Orchestrator`) to illustrate how a multi-server architecture works. In practice, you would use an LLM framework (like [LangChain](https://www.langchain.com/) or [ADK](https://adk.dev/)) acting as an MCP client to orchestrate these connections.*
+### Code Example: Professional Client Orchestration
+The following example demonstrates the **"Gold Standard"** for building an MCP Client that orchestrates multiple servers. It uses `AsyncExitStack` for robust lifecycle management and `ClientSession` for capability negotiation.
 
 ```python
-# Multi-Server Orchestrator Implementation
-from mcp import Client, Orchestrator
+import asyncio
+from contextlib import AsyncExitStack
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
-async def initialize_orchestrator():
-    orchestrator = Orchestrator()
-    
-    # Connect to multiple specialized servers
-    db_client = await Client.connect("localhost:8001")
-    fs_client = await Client.connect("localhost:8002")
-    api_client = await Client.connect("localhost:8003")
-    
-    # Register clients with the orchestrator
-    orchestrator.register_server("database", db_client)
-    orchestrator.register_server("filesystem", fs_client)
-    orchestrator.register_server("external_api", api_client)
-    
-    return orchestrator
+class OrchestratorClient:
+    def __init__(self):
+        self.exit_stack = AsyncExitStack()
+        self.sessions: dict[str, ClientSession] = {}
 
-async def handle_agent_workflow(orchestrator, user_prompt):
-    # Retrieve aggregated tool catalog
-    tools = await orchestrator.get_all_tools()
-    
-    # Agent logic (simplified) selects tools based on prompt
-    selected_tools = select_tools(user_prompt, tools)
-    
-    results = []
-    for tool_call in selected_tools:
-        # Orchestrator routes the call to the correct server
-        result = await orchestrator.execute_tool(
-            tool_name=tool_call.name,
-            parameters=tool_call.parameters
-        )
-        results.append(result)
+    async def add_server(self, name: str, command: str, args: list[str]):
+        # 1. Define server parameters
+        server_params = StdioServerParameters(command=command, args=args)
         
-    return synthesize_response(results)
+        # 2. Connect via stdio transport
+        transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
+        read, write = transport
+        
+        # 3. Create and initialize session
+        session = await self.exit_stack.enter_async_context(ClientSession(read, write))
+        await session.initialize()
+        
+        self.sessions[name] = session
+        print(f"Connected to {name}")
+
+    async def list_all_tools(self):
+        all_tools = []
+        for name, session in self.sessions.items():
+            response = await session.list_tools()
+            all_tools.extend(response.tools)
+        return all_tools
+
+    async def cleanup(self):
+        await self.exit_stack.aclose()
+
+async def main():
+    orchestrator = OrchestratorClient()
+    try:
+        # Orchestrate a custom Python server and the official Node.js SQLite server
+        await orchestrator.add_server("custom-math", "python", ["server.py"])
+        await orchestrator.add_server("sqlite", "npx", ["-y", "@modelcontextprotocol/server-sqlite", "/tmp/test.db"])
+        
+        tools = await orchestrator.list_all_tools()
+        print(f"\nAggregated Catalog: {[t.name for t in tools]}")
+        
+    finally:
+        await orchestrator.cleanup()
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## Try It Yourself
 
-1. Start three different MCP servers from previous labs (e.g., Hello MCP, Tool Server, Resource Server) on different ports.
-2. Create an orchestrator script that connects to all three servers simultaneously.
-3. Fetch and print the aggregated tool catalog.
-4. Execute a workflow that requires reading a file from the file server and writing data to the database server.
-5. Observe how the orchestrator handles routing and potential errors.
+Let's run the Orchestrator Client you see above to prove that one central brain can talk to multiple different servers simultaneously.
+
+1. Ensure you have the `server.py` (your FastMCP calculator server from Chapter 1) in your current directory.
+2. Save the Orchestrator code example above as `orchestrator.py`.
+3. Make sure you have the official MCP Python SDK installed (this provides the `ClientSession`):
+   ```bash
+   pip install mcp
+   ```
+4. Run the orchestrator script:
+   ```bash
+   python orchestrator.py
+   ```
+5. Look at the terminal output! You will see the script connect to both your custom Python server and the official SQLite server, pulling `add`, `read_query`, and `list_tables` all into one unified `Aggregated Catalog`.
+
+*Note: This script is doing exactly what Claude Desktop does under the hood when it reads your config file!*
 
 ## Checkpoint
 1. What are the challenges of managing context when an agent interacts with multiple servers?

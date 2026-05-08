@@ -10,11 +10,11 @@ Implement zero-trust security concepts within an MCP server to prevent unauthori
 ## Step 1: Project Setup
 
 ```bash
-mkdir -p mcp-lab-04
-cd mcp-lab-04
+mkdir -p mcp-lab-05
+cd mcp-lab-05
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp mcp-inspector
+pip install mcp
 ```
 
 ## Step 2: Implementing Security Checks
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 **Test 1: Unprivileged Execution**
 1. Run the server normally:
    ```bash
-   mcp-inspector python secure_server.py
+   npx @modelcontextprotocol/inspector python secure_server.py
    ```
 2. Try to run `delete_production_database` with `confirm=true`. You should receive the Security Error.
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 1. Stop the Inspector.
 2. Run the server with the admin environment variable:
    ```bash
-   ADMIN_MODE=1 mcp-inspector python secure_server.py
+   ADMIN_MODE=1 npx @modelcontextprotocol/inspector python secure_server.py
    ```
 3. Try to run `delete_production_database` with `confirm=true`. The operation should succeed, and you will see the warning logged via the `Context` object in the Inspector logs.
 

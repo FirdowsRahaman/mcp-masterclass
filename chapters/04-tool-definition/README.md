@@ -1,4 +1,4 @@
-# Chapter 4: Building MCP Servers
+# Chapter 4: Tool Definition & Schemas
 
 ## Objective
 In 10 minutes, you will understand:
@@ -48,9 +48,11 @@ A **JSON Schema** is the SOP for an LLM—it strictly defines the exact inputs, 
 - Hot-reload during development
 - Integration with host environments
 
-### Code Example
+## Code Example: Defining Tools with FastMCP
+
+With FastMCP, defining a tool is as simple as writing a standard Python function and adding the `@mcp.tool()` decorator. The SDK automatically reads your Python type hints (`str`, `int`, etc.) and your docstring, converting them into the strict JSON Schema required by the MCP protocol.
+
 ```python
-# Chapter 4: Tool Definitionation (Python)
 from mcp.server.fastmcp import FastMCP
 
 # FastMCP automatically handles capabilities and routing
@@ -58,7 +60,7 @@ mcp = FastMCP("file-operations")
 
 @mcp.tool()
 def read_file(path: str) -> str:
-    """Read contents of a file. FastMCP automatically infers the schema from these type hints."""
+    """Read contents of a file. FastMCP infers the schema from these type hints."""
     with open(path, 'r') as f:
         return f.read()
 
@@ -68,6 +70,23 @@ def write_file(path: str, content: str) -> bool:
     with open(path, 'w') as f:
         f.write(content)
     return True
+```
+
+### Structured Output with Pydantic
+For complex tools, returning a plain string isn't always enough. You can return **Pydantic models** to provide the AI with a strict, machine-readable structure. FastMCP will automatically generate the JSON schema for the return type.
+
+```python
+from pydantic import BaseModel
+
+class FileMetadata(BaseModel):
+    path: str
+    size: int
+    encoding: str
+
+@mcp.tool()
+def get_metadata(path: str) -> FileMetadata:
+    """Get detailed metadata for a file."""
+    return FileMetadata(path=path, size=1024, encoding="utf-8")
 
 if __name__ == "__main__":
     # Start the server using stdio transport (standard for MCP)
@@ -76,20 +95,25 @@ if __name__ == "__main__":
 
 ## Try It Yourself
 
-1. Create a new directory for your server:
+1. Create a new directory and file for your server:
    ```bash
-   mkdir -p labs/lab-02-tool-server/server
-   cd labs/lab-02-tool-server/server
+   mkdir -p tool-server && cd tool-server
+   touch server.py
    ```
-2. Initialize a Python virtual environment
-3. Install MCP SDK: `pip install mcp-sdk`
-4. Create `server.py` with the code example above
-5. Start the server: `python server.py`
-6. Connect using MCP Inspector and test file operations
+2. Install the FastMCP SDK: 
+   ```bash
+   pip install mcp
+   ```
+3. Copy the code examples above into `server.py`.
+4. Start the server via the Inspector: 
+   ```bash
+   npx @modelcontextprotocol/inspector python server.py
+   ```
+5. In the Inspector UI, click **Tools**. You should see `read_file`, `write_file`, and `get_metadata` beautifully formatted with their schemas!
 
 ## Checkpoint
-1. What are the key differences between dev_mode and production mode?
-2. How does the server handle tool validation before execution?
+1. How does FastMCP know what JSON schema to generate for a tool?
+2. Why is a strict Standard Operating Procedure (JSON Schema) critical for LLMs?
 
 ## Architect Notes
 

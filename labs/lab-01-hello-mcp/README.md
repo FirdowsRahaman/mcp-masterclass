@@ -20,8 +20,8 @@ cd mcp-lab-01
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install the FastMCP framework and the MCP Inspector
-pip install fastmcp mcp-inspector
+# Install the official MCP SDK framework
+pip install mcp
 ```
 
 ## Step 2: Build the Server
@@ -53,7 +53,7 @@ Instead of running the Python script directly, we will use the **MCP Inspector**
 Run the following command in your terminal:
 
 ```bash
-mcp-inspector python server.py
+npx @modelcontextprotocol/inspector python server.py
 ```
 
 ### Verification

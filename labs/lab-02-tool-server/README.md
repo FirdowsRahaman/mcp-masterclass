@@ -14,7 +14,7 @@ mkdir -p mcp-lab-02
 cd mcp-lab-02
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp mcp-inspector pydantic
+pip install mcp pydantic
 ```
 
 ## Step 2: Complex Tool Schemas with FastMCP
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
 1. Start the Inspector:
    ```bash
-   mcp-inspector python weather_server.py
+   npx @modelcontextprotocol/inspector python weather_server.py
    ```
 2. Open the Inspector in your browser.
 3. Go to the **Tools** tab. Look at the JSON Schema generated for `get_current_weather`. Notice how the descriptions from your `Field` declarations are perfectly translated to help the AI model understand the parameters!

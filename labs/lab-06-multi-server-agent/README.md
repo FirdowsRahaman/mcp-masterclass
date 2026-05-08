@@ -9,8 +9,8 @@ Connect to multiple MCP servers simultaneously from a single Client script, demo
 ## Step 1: Project Setup
 
 ```bash
-mkdir -p mcp-lab-05
-cd mcp-lab-05
+mkdir -p mcp-lab-06
+cd mcp-lab-06
 python -m venv venv
 source venv/bin/activate
 # We need the low-level mcp package to act as a client
@@ -18,7 +18,7 @@ pip install mcp
 ```
 
 Copy your `server.py` from Lab 1 and rename it to `hello_server.py` in this folder.
-Copy your `kb_server.py` from Lab 3 into this folder.
+Create an empty database file for the SQLite server: `touch test.db`
 
 ## Step 2: Build the Orchestrator Client
 
@@ -29,45 +29,51 @@ Create `orchestrator.py`:
 ```python
 # orchestrator.py
 import asyncio
+from contextlib import AsyncExitStack
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-async def main():
-    # Define parameters to launch the two servers as subprocesses
-    server1_params = StdioServerParameters(command="python", args=["hello_server.py"])
-    server2_params = StdioServerParameters(command="python", args=["kb_server.py"])
+class OrchestratorClient:
+    def __init__(self):
+        self.exit_stack = AsyncExitStack()
+        self.sessions: dict[str, ClientSession] = {}
 
-    print("Orchestrator: Connecting to Server 1 (Hello)...")
-    async with stdio_client(server1_params) as (read1, write1):
-        async with ClientSession(read1, write1) as session1:
-            await session1.initialize()
-            
-            print("Orchestrator: Connecting to Server 2 (Knowledge Base)...")
-            async with stdio_client(server2_params) as (read2, write2):
-                async with ClientSession(read2, write2) as session2:
-                    await session2.initialize()
-                    
-                    # 1. Aggregate Capabilities
-                    print("\n--- Aggregated Tool Catalog ---")
-                    tools = await session1.list_tools()
-                    for tool in tools.tools:
-                        print(f"Server 1 offers Tool: {tool.name}")
-                        
-                    # 2. Aggregate Resources
-                    print("\n--- Aggregated Resource Catalog ---")
-                    resources = await session2.list_resources()
-                    for res in resources.resources:
-                        print(f"Server 2 offers Resource: {res.uri}")
-                    
-                    # 3. Execute across domains
-                    print("\n--- Executing Cross-Domain Actions ---")
-                    # Call tool on Server 1
-                    hello_result = await session1.call_tool("say_hello", {"name": "Orchestrator"})
-                    print(f"Server 1 Result: {hello_result.content[0].text}")
-                    
-                    # Read resource from Server 2
-                    kb_result = await session2.read_resource("kb://topic/security")
-                    print(f"Server 2 Result: {kb_result.contents[0].text}")
+    async def add_server(self, name: str, command: str, args: list[str]):
+        server_params = StdioServerParameters(command=command, args=args)
+        transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
+        read, write = transport
+        session = await self.exit_stack.enter_async_context(ClientSession(read, write))
+        await session.initialize()
+        self.sessions[name] = session
+        print(f"Connected to {name}")
+
+    async def cleanup(self):
+        await self.exit_stack.aclose()
+
+async def main():
+    orchestrator = OrchestratorClient()
+    try:
+        print("Booting servers...")
+        # Server 1: Custom Python Server
+        await orchestrator.add_server("hello-mcp", "python", ["hello_server.py"])
+        # Server 2: Official Node.js SQLite Server
+        await orchestrator.add_server("sqlite", "npx", ["-y", "@modelcontextprotocol/server-sqlite", "test.db"])
+        
+        # 1. Aggregate Capabilities
+        print("\n--- Aggregated Tool Catalog ---")
+        for name, session in orchestrator.sessions.items():
+            response = await session.list_tools()
+            for tool in response.tools:
+                print(f"[{name}] offers Tool: {tool.name}")
+                
+        # 2. Execute Action on Server 1
+        print("\n--- Executing Cross-Domain Actions ---")
+        hello_session = orchestrator.sessions["hello-mcp"]
+        result = await hello_session.call_tool("say_hello", {"name": "Orchestrator"})
+        print(f"Hello Server Result: {result.content[0].text}")
+
+    finally:
+        await orchestrator.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())

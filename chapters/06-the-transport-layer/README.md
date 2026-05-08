@@ -45,9 +45,22 @@ if __name__ == "__main__":
 ```
 
 ## Try It Yourself
-1. Create a simple FastMCP server.
-2. Run it normally (which defaults to `stdio`). Try to pipe input into it manually using your terminal—notice how difficult it is to read JSON-RPC by hand.
-3. Use the **MCP Inspector** (`mcp-inspector python server.py`). The inspector acts as a bridge, connecting to your `stdio` server and exposing a beautiful web UI for debugging!
+
+Let's experience the difference between STDIO and SSE transports.
+
+1. Create a file named `server.py` and paste the SSE Code Example from above.
+2. Run the server directly in your terminal:
+   ```bash
+   python server.py
+   ```
+   *Notice that the terminal now says it is listening on `http://127.0.0.1:8000`. It is acting as a web server!*
+3. To test this SSE server, start the MCP inspector in a **new** terminal window:
+   ```bash
+   npx @modelcontextprotocol/inspector
+   ```
+4. Open the Inspector in your browser (`http://localhost:5173`). 
+5. Instead of using the default "Command" setup, change the **Transport Type** dropdown to **SSE**.
+6. Enter `http://127.0.0.1:8000/sse` as the URL and click Connect. You are now communicating with your MCP server over a network protocol!
 
 ## Checkpoint
 1. Why must you avoid using `print()` when building a `stdio` MCP server?

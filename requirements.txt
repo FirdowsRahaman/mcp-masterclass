@@ -1,0 +1,8 @@
+mcp
+pydantic
+adk-python
+python-dotenv
+flake8
+pytest
+pandas
+tabulate

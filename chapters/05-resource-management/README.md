@@ -49,26 +49,28 @@ The AI must ask the Librarian (the MCP Resource Manager) for a specific book (us
 ```python
 # Resource Server Implementation using FastMCP
 from mcp.server.fastmcp import FastMCP, Context
-import sqlite3
 import time
 
 mcp = FastMCP("clinical-resource-server")
 
+# Dummy database to keep the example self-contained
+PATIENTS = {
+    "123": "Patient 123: 45 yo male, history of hypertension.",
+    "456": "Patient 456: 28 yo female, no known allergies."
+}
+
 # --- 1. Resource: Data Context Injection ---
+# Resources use URI templates. The AI can request specific URIs.
 @mcp.resource("clinical://patients/{patient_id}")
 def get_patient_data(patient_id: str) -> str:
-    """Read patient records as a resource."""
-    conn = sqlite3.connect('clinical.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM patients WHERE id = ?", (patient_id,))
-    results = cursor.fetchall()
-    return str(results)
+    """Read patient records as a read-only resource."""
+    return PATIENTS.get(patient_id, "Patient not found.")
 
 # --- 2. Tool: Execution Context Management ---
 @mcp.tool()
 def analyze_patient(patient_id: str, ctx: Context) -> str:
     """Analyze a patient's data. Demonstrates execution context logging."""
-    # The ctx object allows us to stream progress back to the AI Client
+    # The ctx object allows us to stream progress logs back to the AI Client
     ctx.info(f"Starting analysis for {patient_id}...")
     
     time.sleep(1) # Simulate work
@@ -78,20 +80,25 @@ def analyze_patient(patient_id: str, ctx: Context) -> str:
     if patient_id.startswith("TEST"):
         ctx.warning("Using test patient data!")
         
-    return "Analysis complete."
+    return f"Analysis complete for {patient_id}."
+
+if __name__ == "__main__":
+    mcp.run()
 ```
 
 ## Try It Yourself
 
-1. Set up a SQLite database with sample patient data
-2. Create a resource server with two tools:
-   - One for querying patient records
-   - One for accessing clinical guidelines
-3. Connect via MCP Inspector and test:
-   - Valid queries with proper patient ID
-   - Attempted access with unauthorized patient ID
-   - Context propagation between tool calls
-4. Compare performance with traditional RAG implementation
+Let's test both the Resource and the Tool.
+
+1. Save the code above as `server.py`.
+2. Start the Inspector:
+   ```bash
+   npx @modelcontextprotocol/inspector python server.py
+   ```
+3. Open the Inspector UI.
+4. Click on **Resources**. You will see the `clinical://patients/{patient_id}` URI template. 
+5. Try evaluating the resource by passing `123` as the `patient_id`. It will return the exact string from our dummy database.
+6. Click on **Tools** and run `analyze_patient(patient_id="123")`. Watch the `ctx.info()` logs stream into the console in real-time as the tool executes!
 
 ## Checkpoint
 1. When would you use implicit context vs explicit resource parameters?

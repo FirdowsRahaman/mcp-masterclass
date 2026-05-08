@@ -14,7 +14,7 @@ mkdir -p mcp-lab-03
 cd mcp-lab-03
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp mcp-inspector
+pip install mcp
 ```
 
 ## Step 2: Implementing Resources
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
 1. Start the Inspector:
    ```bash
-   mcp-inspector python kb_server.py
+   npx @modelcontextprotocol/inspector python kb_server.py
    ```
 2. Open the Inspector in your browser.
 3. Navigate to the **Resources** tab (not the Tools tab!).

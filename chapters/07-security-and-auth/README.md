@@ -91,16 +91,19 @@ def process_patient_data(patient_id: str, action: str, ctx: Context) -> str:
 
 ## Try It Yourself
 
-1. Create a secure tool server with:
-   - Authentication middleware
-   - Permission checks
-   - Human approval workflow
-2. Implement a tool requiring human approval for sensitive operations
-3. Test with:
-   - Valid credentials
-   - Insufficient permissions
-   - Missing human approval
-4. Observe security logs and audit trails
+Let's test this security implementation using the Inspector.
+
+1. Save the code example above as `server.py`.
+2. First, try to run it **without** admin privileges:
+   ```bash
+   npx @modelcontextprotocol/inspector python server.py
+   ```
+3. Open the Inspector browser UI, click on **Tools**, and execute `process_patient_data`. You will see it return `"SECURITY ERROR: Insufficient privileges."` and the `ctx.error()` log will appear.
+4. Now, stop the inspector (`Ctrl+C` in the terminal) and run it again **with** admin privileges by injecting the environment variable:
+   ```bash
+   ADMIN_MODE=1 npx @modelcontextprotocol/inspector python server.py
+   ```
+5. Execute the tool again in the Inspector. This time, it will succeed and you will see the `ctx.info()` audit log confirming the action!
 
 ## Checkpoint
 1. How does zero-trust differ from traditional perimeter security?

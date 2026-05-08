@@ -33,15 +33,32 @@ When building an integration server, you map SaaS capabilities to MCP primitives
    - *Tool*: `execute_query(sql)` (Warning: Ensure read-only database roles!)
    - *Resource*: `bq://schema/{dataset}` (Inject table schemas so the LLM writes correct SQL).
 
+4. **Google Maps Grounding (Enterprise Case Study)**
+   - *Source*: [Google Cloud Maps Grounding Lite](https://adk.dev/tools-custom/mcp-tools/)
+   - *Implementation*: Uses the **Agent Development Kit (ADK)** `McpToolset` to load the official Maps MCP server.
+   - *Value*: Provides the agent with real-world, high-accuracy geographic data directly from Google Cloud.
+
 ### Implementation Strategy
 Instead of building a massive monolithic server that talks to Slack, Drive, and BigQuery simultaneously, the MCP philosophy encourages **Micro-Servers**.
 
 Build one server for Slack, one for Drive, and one for BigQuery. Let the Host (or Orchestrator) connect to all three. This allows you to scale, secure, and update them independently.
 
 ## Try It Yourself
-*Note: To see full real-world integrations in action, check out the `projects/` directory in this repository!*
-- See `projects/ai-dev-assistant` for local shell/git integration.
-- See `projects/data-agent` for a mock SQL database integration.
+
+You don't have to build every integration from scratch! The open-source community and Anthropic have already built dozens of production-ready MCP servers. 
+
+Let's run the official **SQLite** integration provided by the MCP team directly off the shelf.
+
+1. Find any SQLite database file on your machine (or just provide a path for a new one, e.g., `/tmp/test.db`).
+2. Run the official MCP SQLite server directly via the Inspector using `npx`:
+   ```bash
+   npx @modelcontextprotocol/inspector npx -y @modelcontextprotocol/server-sqlite /tmp/test.db
+   ```
+3. Open the Inspector UI in your browser.
+4. Click on **Tools**. You will immediately see robust, pre-built tools like `read_query` and `list_tables` ready to be used by your AI!
+5. This proves that you can pull "Universal Translators" off the shelf to instantly upgrade your AI Agents.
+
+*(Note: To see full real-world custom integrations built in Python, check out the `projects/` directory in this repository!)*
 
 ## Checkpoint
 1. Why is it better to map database schemas to Resources rather than making the AI guess table names?

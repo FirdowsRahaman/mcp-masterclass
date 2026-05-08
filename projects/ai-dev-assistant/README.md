@@ -1,5 +1,9 @@
 # Capstone Project: AI Dev Assistant
 
+<div align="center">
+  <img src="../../assets/dev-assistant.png" alt="AI Dev Assistant Interface" width="100%">
+</div>
+
 ## Overview
 The **AI Dev Assistant** is an autonomous coding agent built on MCP that interfaces directly with a developer's local environment. By exposing local file systems, Git commands, and linters via an MCP server, an AI client (like Claude Desktop) can read repositories, write code, create commits, and fix its own linting errors.
 
@@ -9,13 +13,17 @@ The system consists of an AI Host communicating with a local FastMCP Server that
 
 ```mermaid
 graph TD
-    Client[AI Client / Claude] <-->|JSON-RPC via stdio| Host[MCP Host]
-    Host <-->|Tool Requests| MCPServer[FastMCP Server]
-    
-    subgraph Developer Machine
-    MCPServer -->|Read/Write| FS[(Local File System)]
-    MCPServer -->|Execute| Git[Git CLI]
-    MCPServer -->|Execute| Linter[Python Linter/Pytest]
+    classDef external fill:#2b6cb0,stroke:#2c5282,stroke-width:2px,color:#fff
+    classDef proxy fill:#805ad5,stroke:#553c9a,stroke-width:2px,color:#fff
+    classDef local fill:#2d3748,stroke:#1a202c,stroke-width:2px,color:#fff
+
+    C["AI Client (e.g. Claude)"]:::external <-->|"JSON-RPC (stdio)"| H["MCP Host"]:::external
+    H <-->|"Tool Requests"| S["FastMCP Server (Proxy)"]:::proxy
+
+    subgraph OS["Developer Machine (Local Environment)"]
+        S -->|"Read/Write"| FS[("Local File System")]:::local
+        S -->|"Subprocess Execute"| Git["Git CLI"]:::local
+        S -->|"Subprocess Execute"| Linter["Python Linter / Pytest"]:::local
     end
 ```
 
@@ -83,13 +91,13 @@ if __name__ == "__main__":
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp flake8
+pip install mcp flake8
 ```
 
 ### 2. Connect via MCP Inspector
 To test the tools safely before giving an AI full control:
 ```bash
-mcp-inspector python dev_server.py
+npx @modelcontextprotocol/inspector python dev_server.py
 ```
 
 ### 3. Connect via Claude Desktop

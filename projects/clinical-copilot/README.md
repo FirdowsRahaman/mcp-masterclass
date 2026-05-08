@@ -1,5 +1,9 @@
 # Capstone Project: Clinical Copilot
 
+<div align="center">
+  <img src="../../assets/clinical-copilot.png" alt="Clinical Copilot Dashboard" width="100%">
+</div>
+
 ## Overview
 The **Clinical Copilot** demonstrates how to deploy MCP in highly regulated environments like Healthcare, Finance, or Legal. It acts as a secure, zero-trust proxy between an AI Client and an Electronic Medical Record (EMR) system. 
 
@@ -11,15 +15,21 @@ The MCP Server implements middleware to intercept and scrub data, ensuring the L
 
 ```mermaid
 graph TD
-    Client[AI Client] <-->|JSON-RPC| Host[MCP Host]
-    
-    subgraph Zero-Trust Boundary
-    Host <-->|Tool Requests| MCPServer[FastMCP Server]
-    MCPServer <--> Anonymizer[PII Scrubbing Middleware]
-    MCPServer <--> Approver[Human Approval Gateway]
+    classDef client fill:#2b6cb0,stroke:#2c5282,stroke-width:2px,color:#fff
+    classDef secure fill:#22543d,stroke:#276749,stroke-width:2px,color:#fff
+    classDef critical fill:#9b2c2c,stroke:#742a2a,stroke-width:2px,color:#fff
+    classDef database fill:#4a5568,stroke:#2d3748,stroke-width:2px,color:#fff
+
+    C["AI Client (e.g. Claude)"]:::client <-->|"JSON-RPC (stdio)"| H["MCP Host"]:::client
+
+    subgraph ZT["Zero-Trust Boundary"]
+        H <-->|"Tool Execution"| S["FastMCP Server"]:::secure
+        S <-->|"Data Intercept"| A["PII Scrubbing Middleware"]:::secure
+        S <-->|"Auth Intercept"| AP["Human Approval Gateway"]:::critical
     end
-    
-    Anonymizer <--> EMR[(Electronic Medical Records API)]
+
+    A <-->|"Sanitized Fetch"| EMR[("Electronic Medical Records (EMR)")]:::database
+    AP -.->|"Approved Action"| EMR
 ```
 
 ## Core Server Implementation
@@ -93,12 +103,12 @@ if __name__ == "__main__":
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install fastmcp
+pip install mcp
 ```
 
 ### 2. Connect via MCP Inspector
 ```bash
-mcp-inspector python clinical_server.py
+npx @modelcontextprotocol/inspector python clinical_server.py
 ```
 
 ### 3. Testing the Security Flow

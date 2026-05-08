@@ -42,43 +42,58 @@ You don't just build furniture (AI responses) out on the grass. You need a struc
 - **Remote Execution**: Tool servers run on separate infrastructure
 - **Hybrid Model**: Mix of local and remote servers
 
-### Code Example
-> [!NOTE]
-> *This example uses conceptual pseudo-code (`MCPHost`) to illustrate host responsibilities. In reality, a host is often a full application like Claude Desktop, not a single python class.*
+### Code Example: Configuring a Host
 
-```python
-# Custom MCP Host Implementation
-from mcp.host import MCPHost
+Most developers don't write custom hosts from scratch. Instead, they plug their MCP Servers into existing robust hosts like **Claude Desktop** or **Cursor**.
 
-host = MCPHost(
-    name="Custom Enterprise Host",
-    version="1.0",
-    capabilities={
-        "tool_execution": True,
-        "state_management": "persistent",
-        "security": "zero-trust"
+Here is how you configure Claude Desktop to act as the Host for the Calculator server from Chapter 1:
+
+**`claude_desktop_config.json`**
+```json
+{
+  "mcpServers": {
+    "calculator-server": {
+      "command": "python",
+      "args": [
+        "/absolute/path/to/server.py"
+      ]
     }
-)
-
-# Connect to local tool server
-host.register_server("http://localhost:8000")
-
-# Start host runtime
-host.start()
+  }
+}
 ```
+*When Claude Desktop starts, it will read this config, spawn your Python process, and manage the lifecycle of the connection over standard input/output (stdio).*
+
+### Configuring Other Popular Hosts
+
+Because MCP is a universal standard (like "USB-C for AI"), you aren't locked into Claude Desktop. You can plug the exact same `server.py` into other powerful developer tools:
+
+**1. Cursor (IDE)**
+Cursor has native built-in MCP support for its AI chat and composer.
+- Open Cursor Settings.
+- Navigate to **Features** -> **MCP**.
+- Click **+ Add New MCP Server**.
+- Set Type to `command`, Name to `calculator`, and Command to `python /absolute/path/to/server.py`.
+
+**2. VS Code (via Cline)**
+If you use the popular [Cline](https://github.com/cline/cline) extension in VS Code, you can easily attach MCP servers to it.
+- Open the Cline configuration file located at `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` (Mac).
+- Add the exact same JSON structure used in the Claude Desktop configuration above.
+
+**3. Antigravity & Advanced Agents**
+Advanced autonomous agents (like Antigravity) can seamlessly connect to MCP servers. These systems often connect dynamically via the MCP Client SDKs, or they read from a global `mcp_settings.json` file to arm themselves with your custom tools and resources on the fly.
 
 ## Try It Yourself
 
-1. Install MCP Inspector
-2. Start a local tool server (from Chapter 1)
-3. Connect to it via:
-   ```bash
-   mcp-inspector --connect http://localhost:8000
-   ```
-4. Execute a tool call and observe:
-   - Handshake sequence
-   - Request/response structure
-   - State management behavior
+Let's connect your Chapter 1 server to a real Host (Claude Desktop).
+
+1. Ensure you have [Claude Desktop](https://claude.ai/download) installed.
+2. Locate the configuration file (create it if it doesn't exist):
+   - **Mac**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+3. Edit the file to point to the absolute path of your `server.py` from Chapter 1.
+4. Completely restart Claude Desktop.
+5. Open a new chat and ask Claude: *"What tools do you have available?"* or *"Can you add 542 and 987 using the calculator?"*
+6. Observe how the Host (Claude Desktop) discovers the tool and uses it seamlessly.
 
 ## Checkpoint
 1. What are three key differences between Claude Desktop and a Custom Host?
@@ -92,8 +107,7 @@ host.start()
 - **Security**: Remote execution requires additional network security layers
 
 ### Production Considerations
-- Implement host health monitoring for protocol stability
-- Design for host version compatibility
-- Consider network topology for remote execution
-- Use MCP Inspector in staging environments for protocol validation
-- Plan for graceful degradation when tool servers are unavailable
+- Implement host health monitoring for protocol stability.
+- **Pro Debugging**: In Claude Desktop, you can enable **Chrome DevTools** for deep inspection of message payloads. Create a `developer_settings.json` file in the config directory with `{"allowDevTools": true}` and press `Cmd+Option+I` (Mac) or `Ctrl+Alt+I` (Windows).
+- Use MCP Inspector in staging environments for protocol validation.
+- Plan for graceful degradation when tool servers are unavailable.
