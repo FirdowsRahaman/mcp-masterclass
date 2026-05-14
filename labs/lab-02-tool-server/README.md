@@ -26,6 +26,8 @@ Create `weather_server.py`:
 ```python
 # weather_server.py
 from mcp.server.fastmcp import FastMCP
+from mcp.shared.exceptions import McpError
+from mcp.types import ErrorData, INVALID_PARAMS
 from pydantic import BaseModel, Field
 
 mcp = FastMCP("weather-server")
@@ -37,17 +39,18 @@ class WeatherQuery(BaseModel):
     units: str = Field(default="metric", description="Temperature units: 'metric' or 'imperial'")
 
 @mcp.tool()
-def get_current_weather(query: WeatherQuery) -> str:
+async def get_current_weather(query: WeatherQuery) -> str:
     """
     Fetch the current weather for a given location.
     Always use this tool when the user asks for the current weather.
     """
-    # In a real app, you would make an HTTP request to a weather API here.
+    # In a real app, you would make an async HTTP request to a weather API here.
     # For this lab, we'll return mock data.
     
-    # Validation is already handled by FastMCP/Pydantic before this code runs!
+    # FastMCP validates the types automatically, but we can do semantic validation:
     if query.units not in ["metric", "imperial"]:
-        return "Error: Units must be 'metric' or 'imperial'."
+        # Raise an McpError so the LLM knows exactly why the tool failed
+        raise McpError(ErrorData(code=INVALID_PARAMS, message="Units must be 'metric' or 'imperial'."))
         
     temp = 22 if query.units == "metric" else 72
     unit_str = "°C" if query.units == "metric" else "°F"

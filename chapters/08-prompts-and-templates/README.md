@@ -24,16 +24,32 @@ A Prompt defined on the server includes:
 
 This is incredibly powerful for standardizing complex workflows, like "Code Review" or "Incident Response", ensuring the LLM always follows the exact same chain of thought.
 
+### Advanced FastMCP Features for Prompts
+
+Just like Tools and Resources, Prompts in FastMCP support advanced capabilities:
+1. **Docstrings**: The docstring of your function becomes the description of the prompt. This helps users (and AI orchestrators) understand what the prompt is meant to do and what arguments it expects.
+2. **Asynchronous Execution**: If your prompt needs to fetch dynamic data from a database or API before generating the template, you can use `async def`.
+
 ### Code Example
 ```python
 from mcp.server.fastmcp import FastMCP
 from mcp.types import PromptMessage, TextContent
+import asyncio
 
 mcp = FastMCP("prompt-server")
 
 @mcp.prompt()
-def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
-    """A standardized prompt template for reviewing code."""
+async def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
+    """
+    A standardized prompt template for reviewing code.
+    
+    Args:
+        language: The programming language of the code (e.g., Python, TypeScript).
+        strictness: How strict the review should be (low, medium, high).
+    """
+    
+    # Simulate an asynchronous database query to fetch company coding standards
+    await asyncio.sleep(0.5) 
     
     instruction = f"""
     You are an expert {language} developer. Please review the provided code.
@@ -51,6 +67,9 @@ def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
             content=TextContent(type="text", text=instruction)
         )
     ]
+
+if __name__ == "__main__":
+    mcp.run()
 ```
 
 ## Try It Yourself

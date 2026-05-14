@@ -16,6 +16,28 @@ MCP is transport-agnostic, meaning the core JSON-RPC messages are identical rega
 
 ## How It Works
 
+```mermaid
+sequenceDiagram
+    participant Host as AI Host
+    participant StdServer as Local MCP Server
+    participant NetServer as Remote MCP Server
+    
+    rect rgb(240, 240, 240)
+    Note over Host,StdServer: STDIO Transport (Pneumatic Tube)
+    Host->>StdServer: Spawn subprocess
+    Host->>StdServer: JSON-RPC Request (via stdin)
+    StdServer-->>Host: JSON-RPC Response (via stdout)
+    end
+    
+    rect rgb(230, 240, 250)
+    Note over Host,NetServer: HTTP/SSE Transport (Postal Service)
+    Host->>NetServer: HTTP GET /sse (Connect Stream)
+    NetServer-->>Host: Server-Sent Events stream open
+    Host->>NetServer: HTTP POST /messages (JSON-RPC Request)
+    NetServer-->>Host: SSE Event (JSON-RPC Response)
+    end
+```
+
 ### 1. STDIO Transport
 By default, MCP servers run locally. The AI Host (like Claude Desktop) spawns the MCP Server as a child subprocess and communicates directly via the `stdin` and `stdout` streams.
 

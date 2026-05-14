@@ -24,15 +24,25 @@ Create `prompt_server.py`:
 # prompt_server.py
 from mcp.server.fastmcp import FastMCP
 from mcp.types import PromptMessage, TextContent
+import asyncio
 
 mcp = FastMCP("prompt-server")
 
 # Define a prompt template with arguments
 @mcp.prompt()
-def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
-    """A standardized prompt template for reviewing code."""
+async def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
+    """
+    A standardized prompt template for reviewing code.
     
-    # 1. Construct the exact instructions we want the LLM to follow
+    Args:
+        language: The programming language of the code (e.g., Python, TypeScript).
+        strictness: How strict the review should be (low, medium, high).
+    """
+    
+    # 1. Simulate an asynchronous data fetch (e.g., loading company coding standards)
+    await asyncio.sleep(0.1)
+    
+    # 2. Construct the exact instructions we want the LLM to follow
     instruction = f"""
     You are an expert {language} developer. Please review the provided code.
     Your strictness level is set to: {strictness}.
@@ -43,7 +53,7 @@ def review_code(language: str, strictness: str = "high") -> list[PromptMessage]:
     3. Ensure PEP-8/standard formatting
     """
     
-    # 2. Return it as a list of PromptMessage objects
+    # 3. Return it as a list of PromptMessage objects
     return [
         PromptMessage(
             role="user",

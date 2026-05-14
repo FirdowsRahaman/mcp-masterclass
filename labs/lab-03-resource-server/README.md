@@ -26,6 +26,7 @@ Create `kb_server.py`:
 ```python
 # kb_server.py
 from mcp.server.fastmcp import FastMCP
+import asyncio
 
 mcp = FastMCP("knowledge-base")
 
@@ -38,14 +39,23 @@ KNOWLEDGE_DB = {
 
 # 1. Define a static resource
 @mcp.resource("kb://index")
-def get_index() -> str:
-    """List of all available knowledge base topics."""
+async def get_index() -> str:
+    """
+    List of all available knowledge base topics.
+    The LLM reads this description to understand what data it will get.
+    """
+    await asyncio.sleep(0.1) # Simulate network delay
     return "Available topics: " + ", ".join(KNOWLEDGE_DB.keys())
 
 # 2. Define a dynamic resource using URI templates
 @mcp.resource("kb://topic/{topic_name}")
-def get_topic(topic_name: str) -> str:
-    """Read a specific knowledge base topic."""
+async def get_topic(topic_name: str) -> str:
+    """
+    Read a specific knowledge base topic.
+    Provides detailed internal company documentation.
+    """
+    await asyncio.sleep(0.1) # Simulate database lookup
+    
     if topic_name not in KNOWLEDGE_DB:
         return f"Error: Topic '{topic_name}' not found."
     

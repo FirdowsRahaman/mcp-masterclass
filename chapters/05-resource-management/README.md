@@ -15,6 +15,24 @@ MCP enables AI models to access external resources through standardized interfac
 You wouldn't use a hammer to read a book. When an AI needs to understand context before acting, it doesn't "execute a tool"—it goes to the Reference Library.
 The AI must ask the Librarian (the MCP Resource Manager) for a specific book (using a URI like `file:///logs/error.log`) to read *before* it takes any action in the workshop.
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant AI as AI Model
+    participant MCP as MCP Server
+
+    Note over AI,MCP: Phase 1: Context Gathering (Resource)
+    User->>AI: "Summarize the error log and fix it."
+    AI->>MCP: Read Resource (file:///logs/error.log)
+    MCP-->>AI: Return File Contents
+    Note over AI: AI reads the log to understand the problem
+
+    Note over AI,MCP: Phase 2: Action Execution (Tool)
+    AI->>MCP: Call Tool (fix_database)
+    MCP-->>AI: Return "Success"
+    AI-->>User: "I read the logs and fixed the database."
+```
+
 ### Core Principles
 - **Context Boundaries**: Clearly defined scope for resource access
 - **Resource Lifecycle**: Proper initialization and cleanup
@@ -45,10 +63,19 @@ The AI must ask the Librarian (the MCP Resource Manager) for a specific book (us
 | Security Model | Per-application | Standardized |
 | Error Handling | Custom | Standardized |
 
+### Advanced FastMCP Features for Resources
+
+Just like tools, resources in FastMCP support several advanced features to make them production-ready:
+1. **Docstrings**: The LLM reads the docstring to understand exactly what data the resource provides.
+2. **Asynchronous Execution**: Use `async def` for fetching from remote databases or reading large files without blocking the server.
+3. **Context Injection**: You can inject the `Context` object into resources to log progress during slow reads.
+4. **Binary Data**: Resources can return `bytes` instead of `str` for images, PDFs, or other binary formats.
+
 ### Code Example
 ```python
 # Resource Server Implementation using FastMCP
 from mcp.server.fastmcp import FastMCP, Context
+import asyncio
 import time
 
 mcp = FastMCP("clinical-resource-server")
@@ -59,14 +86,26 @@ PATIENTS = {
     "456": "Patient 456: 28 yo female, no known allergies."
 }
 
-# --- 1. Resource: Data Context Injection ---
-# Resources use URI templates. The AI can request specific URIs.
+# --- 1. Text Resource with Async and Context ---
 @mcp.resource("clinical://patients/{patient_id}")
-def get_patient_data(patient_id: str) -> str:
-    """Read patient records as a read-only resource."""
+async def get_patient_data(patient_id: str, ctx: Context) -> str:
+    """
+    Fetch comprehensive patient records.
+    The LLM uses this description to understand when to request this resource.
+    """
+    ctx.info(f"Fetching data for patient {patient_id}...")
+    await asyncio.sleep(0.5) # Simulate database query
     return PATIENTS.get(patient_id, "Patient not found.")
 
-# --- 2. Tool: Execution Context Management ---
+# --- 2. Binary Resource ---
+@mcp.resource("clinical://scans/{scan_id}.jpg")
+async def get_patient_scan(scan_id: str) -> bytes:
+    """Retrieve an MRI or X-Ray scan as binary image data."""
+    # FastMCP automatically infers the mime type from the .jpg extension
+    # and handles returning the binary bytes properly.
+    return b"dummy_image_data" # In reality, read from a file
+
+# --- 3. Tool: Execution Context Management ---
 @mcp.tool()
 def analyze_patient(patient_id: str, ctx: Context) -> str:
     """Analyze a patient's data. Demonstrates execution context logging."""
@@ -76,7 +115,6 @@ def analyze_patient(patient_id: str, ctx: Context) -> str:
     time.sleep(1) # Simulate work
     ctx.info("Fetching lab results...")
     
-    # We can also issue warnings if something is amiss
     if patient_id.startswith("TEST"):
         ctx.warning("Using test patient data!")
         

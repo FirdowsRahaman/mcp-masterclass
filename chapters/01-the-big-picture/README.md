@@ -1,5 +1,9 @@
 # Chapter 1: The Big Picture
 
+<div align="center">
+  <img src="../../assets/ai-agent.png" alt="AI Agent Architecture" width="100%">
+</div>
+
 ## Objective
 In 10 minutes, you will understand:
 - Why MCP exists as a protocol
@@ -68,6 +72,21 @@ Let's look at an example where you ask the AI Agent for a summary of a local fil
 2. **The MCP Host** checks if you've given permission to access that folder.
 3. **The MCP Host** tells the MCP Client to fetch the file data.
 4. **The MCP Client** sends a standardized request to the **MCP Server** (the script actually reading your hard drive) and brings the data back to the Agent.
+
+```mermaid
+sequenceDiagram
+    participant Agent as AI Agent
+    participant Host as MCP Host
+    participant Client as MCP Client
+    participant Server as MCP Server
+
+    Agent->>Host: Request: "I need to read /logs/error.txt"
+    Host->>Host: Verify user permissions
+    Host->>Client: "Fetch file data"
+    Client->>Server: Protocol Request (Read Resource)
+    Server-->>Client: Return File Contents
+    Client-->>Agent: Pass data back as Context
+```
 
 ### Under the Hood: How Tool Calling Works
 You might be wondering: *How does the "Brain" actually know what tools exist, and how does it execute them without outputting gibberish?*
@@ -144,6 +163,13 @@ sequenceDiagram
     L-->>H: Output JSON {"name": "add", "args": {"a": 5, "b": 7}}<br/>(stop_reason: tool_use)
     H->>C: Catch JSON and pass to Client
     C->>S: Send Strict JSON-RPC over stdio/HTTP
+    
+    note over U,S: 3. Return Phase
+    S-->>C: Execute Tool & Return Response (12)
+    C-->>H: Format Response for LLM
+    H->>L: Send Tool Result Context
+    L-->>H: Output Conversational Text
+    H-->>U: "The sum is 12"
 ```
 
 ### Lifecycle Overview

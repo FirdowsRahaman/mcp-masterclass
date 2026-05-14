@@ -27,26 +27,42 @@ Instead, it must hand a request slip to the **Teller** (the MCP Middleware).
 ## How It Works
 
 ### Security Architecture Layers
-```
-┌─────────────────────────────────────────────────────┐
-│               Security Implementation               │
-├───────────────┬───────────────────┬─────────────────┤
-│  Host Layer   │  Protocol Layer   │  Tool Layer     │
-├───────────────┼───────────────────┼─────────────────┤
-│  Identity     │  Message Signing  │  Input          │
-│  Verification │  & Encryption     │  Validation     │
-│               │                   │                 │
-│  Network      │  Session          │  Permission     │
-│  Policies     │  Management       │  Checks         │
-└───────────────┴───────────────────┴─────────────────┘
+```mermaid
+graph TD
+    subgraph "Comprehensive Security Implementation"
+        subgraph "Host Layer"
+            H1[Identity Verification]
+            H2[Network Policies]
+        end
+        subgraph "Protocol Layer"
+            P1[Message Signing & Encryption]
+            P2[Session Management]
+        end
+        subgraph "Tool Layer"
+            T1[Input Validation]
+            T2[Permission Checks]
+        end
+    end
 ```
 
 ### Human-in-the-Loop Workflow
-1. **Request Initiation**: Model requests sensitive operation
-2. **Approval Trigger**: System identifies need for human review
-3. **Context Presentation**: Relevant information shown to reviewer
-4. **Decision Point**: Human approves/rejects with rationale
-5. **Execution**: Action proceeds based on approval
+```mermaid
+stateDiagram-v2
+    [*] --> RequestInitiation: Model calls Tool
+    RequestInitiation --> ApprovalTrigger: Sensitive action detected
+    ApprovalTrigger --> HumanReview: Prompt Human Reviewer
+    
+    state HumanReview {
+        [*] --> ContextPresentation: Show rationale & parameters
+        ContextPresentation --> DecisionPoint
+        DecisionPoint --> Approved
+        DecisionPoint --> Rejected
+    }
+    
+    Approved --> Execution: Proceed with action
+    Execution --> [*]: Return Result to Model
+    Rejected --> [*]: Return Error to Model
+```
 
 ### Permission System Design
 | Permission Level | Scope | Example |
