@@ -7,6 +7,9 @@
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
   <img src="https://img.shields.io/badge/SDK-FastMCP-purple.svg" alt="FastMCP">
+  <a href="EU_AI_ACT_TECHNICAL_DOCUMENTATION.md"><img src="https://img.shields.io/badge/EU%20AI%20Act-Compliant-10B981?style=flat-square" alt="EU AI Act"></a>
+  <a href="docs/adr/"><img src="https://img.shields.io/badge/Architecture-ADRs-8B5CF6?style=flat-square" alt="ADRs"></a>
+  <img src="https://img.shields.io/badge/Privacy-GDPR%20by%20Design-0EA5E9?style=flat-square" alt="GDPR">
 </div>
 
 <br/>
@@ -19,6 +22,8 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI models t
 - [Why This Masterclass?](#-why-this-masterclass)
 - [The Anatomy of an AI Agent](#-the-anatomy-of-an-ai-agent)
 - [Prerequisites & Quick Start](#-prerequisites--quick-start)
+- [EU AI Act Technical Documentation](EU_AI_ACT_TECHNICAL_DOCUMENTATION.md)
+- [Architecture Decision Records (ADRs)](docs/adr/)
 - [Curriculum Syllabus](#-curriculum-syllabus)
   - [Theory: Chapters](#-theory-chapters)
   - [Practice: Labs](#-practice-labs)
@@ -110,6 +115,7 @@ This masterclass is designed to be highly practical. We recommend the "Read, Bui
 - 🧪 [Lab 4: Prompts & Templates](labs/lab-04-prompts-and-templates/README.md)
 - 🧪 [Lab 5: Add security layer](labs/lab-05-secure-tools/README.md)
 - 🧪 [Lab 6: Multi-server orchestration](labs/lab-06-multi-server-agent/README.md)
+- 🧪 [Lab 7: GDPR PII Gateway & EU AI Act Audit Logger](labs/lab-07-gdpr-pii-gateway/README.md)
 
 ### 🏆 Mastery: Capstone Projects
 *See how enterprise micro-servers orchestrate together to solve complex domain problems.*
