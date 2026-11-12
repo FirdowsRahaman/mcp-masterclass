@@ -1,4 +1,4 @@
-# Lab 7: GDPR PII Sanitization Gateway & EU AI Act Audit Logger 🇪🇺
+# Lab 7: GDPR PII Sanitization Gateway & EU AI Act Audit Logger 
 
 This lab implements an enterprise-grade **Model Context Protocol (MCP)** gateway that:
 1. Automatically intercepts tool parameters to redact **GDPR personal identifiers** (European IBANs, passport numbers, email addresses, phone numbers) before tool execution.
@@ -6,7 +6,7 @@ This lab implements an enterprise-grade **Model Context Protocol (MCP)** gateway
 
 ---
 
-## 🎯 Learning Objectives
+## Learning Objectives
 
 - Implement an MCP middleware wrapper that sanitizes tool inputs using GDPR privacy-by-design principles.
 - Preserve de-identification mapping in an encrypted, isolated memory session for downstream deanonymization.
@@ -14,7 +14,7 @@ This lab implements an enterprise-grade **Model Context Protocol (MCP)** gateway
 
 ---
 
-## 🛠️ Architecture
+## Architecture
 
 ```
 Agent Tool Request ──▶ [GDPR PII Scrubbing Middleware]
@@ -33,7 +33,7 @@ Agent Tool Request ──▶ [GDPR PII Scrubbing Middleware]
 
 ---
 
-## 🚀 Running the Server
+## Running the Server
 
 ```bash
 python server.py

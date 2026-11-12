@@ -3,7 +3,7 @@
 ## Objective
 Set up your local development environment, build your first Model Context Protocol server using FastMCP, and test it using the official MCP Inspector.
 
-## 🛠 Prerequisites
+## Prerequisites
 - Python 3.10 or higher
 - A terminal or command prompt
 
@@ -63,5 +63,5 @@ npx @modelcontextprotocol/inspector python server.py
 4. Fill in the `name` argument and click **Run Tool**.
 5. You should see the successful JSON-RPC response returned by your server!
 
-## 🎉 Success!
+## Success!
 You've just built and tested your first MCP server. You understand how the host executes the server script and communicates with it over `stdio`. In Lab 2, we will build more complex tools with schemas.

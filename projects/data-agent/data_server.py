@@ -20,8 +20,7 @@ CONN = setup_mock_db()
 # --- Resources (Context) ---
 @mcp.resource("db://schema/public")
 def get_database_schema() -> str:
-    """
-    Returns the complete database schema. 
+    """Returns the complete database schema. 
     The AI should read this resource BEFORE attempting to write any SQL queries.
     """
     cursor = CONN.cursor()
@@ -39,8 +38,7 @@ def get_database_schema() -> str:
 # --- Tools (Action) ---
 @mcp.tool()
 def execute_read_only_sql(query: str) -> str:
-    """
-    Executes a SELECT query against the data warehouse.
+    """Executes a SELECT query against the data warehouse.
     Returns the results formatted as a Markdown table.
     """
     # 1. Security Check: Block destructive commands

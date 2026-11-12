@@ -3,7 +3,7 @@
 ## Objective
 Connect to multiple MCP servers simultaneously from a single Client script, demonstrating how agents orchestrate across domain boundaries.
 
-## 🛠 Prerequisites
+## Prerequisites
 - You need the Python scripts from Lab 1 (`server.py`) and Lab 3 (`kb_server.py`).
 
 ## Step 1: Project Setup
@@ -88,7 +88,7 @@ python orchestrator.py
 
 You should see the client boot up both servers sequentially, aggregate their tools and resources, and then successfully execute commands against both independent servers.
 
-## 🎉 Success!
+## Success!
 You've built a multi-server orchestrator! This is exactly how production systems like Claude Desktop aggregate local file system tools, database tools, and web search tools into a single, cohesive AI context. 
 
 Congratulations on completing the MCP Masterclass Labs!

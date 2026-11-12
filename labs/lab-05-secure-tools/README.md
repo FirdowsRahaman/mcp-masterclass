@@ -3,7 +3,7 @@
 ## Objective
 Implement zero-trust security concepts within an MCP server to prevent unauthorized tool execution.
 
-## 🛠 Prerequisites
+## Prerequisites
 - Completion of Labs 1 and 2
 - Python 3.10+
 
@@ -79,5 +79,5 @@ if __name__ == "__main__":
    ```
 3. Try to run `delete_production_database` with `confirm=true`. The operation should succeed, and you will see the warning logged via the `Context` object in the Inspector logs.
 
-## 🎉 Success!
+## Success!
 You've implemented application-level security within an MCP tool. In Chapter 7, we discussed how this pattern scales to massive multi-tenant architectures. Next, we'll tackle multi-server orchestration.

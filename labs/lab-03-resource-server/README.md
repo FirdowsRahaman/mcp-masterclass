@@ -77,5 +77,5 @@ if __name__ == "__main__":
 5. Click to read the `kb://index` resource. The server will return the content.
 6. Try filling in the template with `kb://topic/security` and reading it. 
 
-## 🎉 Success!
+## Success!
 You've implemented the Resource pattern! In a real application like Claude Desktop, the user can attach these URIs to their conversation, injecting massive amounts of precise context directly into the prompt without forcing the model to "use a tool" to find it.

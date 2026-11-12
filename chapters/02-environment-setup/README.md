@@ -27,9 +27,9 @@ You don't just build furniture (AI responses) out on the grass. You need a struc
 ### Host Comparison Matrix
 | Host | Type | Debugging | Customization | Production Ready |
 |------|------|-----------|---------------|------------------|
-| Claude Desktop | Native | Limited | Low | ✅ |
-| Cursor | IDE Plugin | Medium | Medium | ✅ |
-| Custom Host | Self-built | Full | High | ✅ |
+| Claude Desktop | Native | Limited | Low |  |
+| Cursor | IDE Plugin | Medium | Medium |  |
+| Custom Host | Self-built | Full | High |  |
 
 ### MCP Inspector Workflow
 1. **Capture**: Intercept MCP protocol traffic

@@ -24,8 +24,7 @@ def anonymize_clinical_data(data: dict) -> dict:
 # --- Tools ---
 @mcp.tool()
 def get_patient_history(patient_id: str, ctx: Context) -> dict:
-    """
-    Retrieve clinical history for diagnosis.
+    """Retrieve clinical history for diagnosis.
     Returns safe, anonymized data for the LLM to analyze.
     """
     ctx.info(f"Audit Log: Accessing records for {patient_id}")
@@ -41,8 +40,7 @@ def get_patient_history(patient_id: str, ctx: Context) -> dict:
 
 @mcp.tool()
 def prescribe_medication(patient_id: str, medication: str, human_approved: bool, ctx: Context) -> str:
-    """
-    DANGEROUS: Prescribes medication.
+    """DANGEROUS: Prescribes medication.
     The LLM MUST ask the user to explicitly say 'I approve' before setting human_approved=True.
     """
     if not human_approved:

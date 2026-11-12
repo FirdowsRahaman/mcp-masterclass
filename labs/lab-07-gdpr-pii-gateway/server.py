@@ -1,5 +1,4 @@
-"""
-Lab 7: GDPR PII Sanitization Gateway & EU AI Act Article 12 Audit Logger
+"""Lab 7: GDPR PII Sanitization Gateway & EU AI Act Article 12 Audit Logger
 Demonstrates privacy-preserving MCP middleware with European regulatory audit logging.
 """
 
@@ -19,9 +18,7 @@ mcp = FastMCP("gdpr-sovereign-gateway")
 # =====================================================================
 
 class GDPRSanitizer:
-    """Detects and masks EU-specific personal data before tool processing."""
-    
-    PATTERNS = {
+    """Detects and masks EU-specific personal data before tool processing."""PATTERNS = {
         "EMAIL": r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+",
         "EU_IBAN": r"[A-Z]{2}\d{2}[A-Z0-9]{4}\d{7}([A-Z0-9]?){0,16}",
         "PHONE": r"(\+?[0-9]{1,4}[\s-]?)?(\(?[0-9]{2,4}\)?[\s-]?)?[0-9]{3,4}[\s-]?[0-9]{3,4}",
@@ -70,7 +67,7 @@ class EUAIActAuditLogger:
             ).hexdigest()
         }
         # In production, stream to OpenTelemetry collector / WORM S3 Glacier storage
-        print(f"\n📋 [EU AI Act Audit Log] {json.dumps(event, indent=2)}")
+        print(f"\n [EU AI Act Audit Log] {json.dumps(event, indent=2)}")
 
 # =====================================================================
 # 3. Secure MCP Tools with Middleware Hooks
@@ -78,8 +75,7 @@ class EUAIActAuditLogger:
 
 @mcp.tool()
 def process_european_invoice(invoice_text: str, ctx: Context) -> str:
-    """
-    Processes an EU commercial invoice safely after passing through
+    """Processes an EU commercial invoice safely after passing through
     GDPR Article 25 privacy sanitization and emitting an Article 12 audit log.
     """
     start_time = time.time()

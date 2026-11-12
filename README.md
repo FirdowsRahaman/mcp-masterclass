@@ -1,15 +1,14 @@
-# MCP Masterclass 🎓
+# MCP Masterclass 
 
 <div align="center">
   <p><em>The definitive guide to building production-ready AI agents with the Model Context Protocol.</em></p>
   
-  <img src="https://img.shields.io/badge/Python-3.13+-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
-  <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
-  <img src="https://img.shields.io/badge/SDK-FastMCP-purple.svg" alt="FastMCP">
-  <a href="EU_AI_ACT_TECHNICAL_DOCUMENTATION.md"><img src="https://img.shields.io/badge/EU%20AI%20Act-Compliant-10B981?style=flat-square" alt="EU AI Act"></a>
-  <a href="docs/adr/"><img src="https://img.shields.io/badge/Architecture-ADRs-8B5CF6?style=flat-square" alt="ADRs"></a>
-  <img src="https://img.shields.io/badge/Privacy-GDPR%20by%20Design-0EA5E9?style=flat-square" alt="GDPR">
+  <a href="https://www.python.org"><img src="https://img.shields.io/badge/Python-3.13+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/Protocol-Model_Context_Protocol-6366F1?style=for-the-badge" alt="MCP"></a>
+  <a href="https://github.com/jlowin/fastmcp"><img src="https://img.shields.io/badge/SDK-FastMCP-8B5CF6?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastMCP"></a>
+  <a href="EU_AI_ACT_TECHNICAL_DOCUMENTATION.md"><img src="https://img.shields.io/badge/EU_AI_Act-Compliant-10B981?style=for-the-badge" alt="EU AI Act"></a>
+  <a href="docs/adr/"><img src="https://img.shields.io/badge/Architecture-ADRs-8B5CF6?style=for-the-badge" alt="ADRs"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"></a>
 </div>
 
 <br/>
@@ -18,32 +17,32 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI models t
 
 ---
 
-## 📑 Table of Contents
-- [Why This Masterclass?](#-why-this-masterclass)
-- [The Anatomy of an AI Agent](#-the-anatomy-of-an-ai-agent)
-- [Prerequisites & Quick Start](#-prerequisites--quick-start)
+## Table of Contents
+- [Why This Masterclass?](#why-this-masterclass)
+- [The Anatomy of an AI Agent](#the-anatomy-of-an-ai-agent)
+- [Prerequisites & Quick Start](#prerequisites--quick-start)
 - [EU AI Act Technical Documentation](EU_AI_ACT_TECHNICAL_DOCUMENTATION.md)
 - [Architecture Decision Records (ADRs)](docs/adr/)
-- [Curriculum Syllabus](#-curriculum-syllabus)
-  - [Theory: Chapters](#-theory-chapters)
-  - [Practice: Labs](#-practice-labs)
-  - [Mastery: Capstone Projects](#-mastery-capstone-projects)
-- [Recommended Ecosystem Tools](#-recommended-ecosystem-tools)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Curriculum Syllabus](#curriculum-syllabus)
+  - [Theory: Chapters](#theory-chapters)
+  - [Practice: Labs](#practice-labs)
+  - [Mastery: Capstone Projects](#mastery-capstone-projects)
+- [Recommended Ecosystem Tools](#recommended-ecosystem-tools)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## 🌟 Why This Masterclass?
+## Why This Masterclass?
 
-- 🚀 **Zero to Production**: Learn everything from basic protocol handshakes to advanced zero-trust security and multi-server orchestration.
-- 🛠️ **FastMCP Native**: Built entirely on the modern, asynchronous Python SDK (`FastMCP`). No boilerplate, just business logic.
-- 🛡️ **Enterprise Ready**: Deep dives into Human-in-the-Loop workflows, robust error handling, and secure binary data streaming.
-- 🎓 **Hands-On Capstones**: Don't just read—build! Construct real-world agents like Clinical Copilots and Autonomous Dev Assistants.
+- **Zero to Production**: Learn everything from basic protocol handshakes to advanced zero-trust security and multi-server orchestration.
+- **FastMCP Native**: Built entirely on the modern, asynchronous Python SDK (`FastMCP`). No boilerplate, just business logic.
+- **Enterprise Ready**: Deep dives into Human-in-the-Loop workflows, robust error handling, and secure binary data streaming.
+- **Hands-On Capstones**: Don't just read—build! Construct real-world agents like Clinical Copilots and Autonomous Dev Assistants.
 
 ---
 
-## 🧠 The Anatomy of an AI Agent
+## The Anatomy of an AI Agent
 
 Before building MCP servers, it's crucial to understand where MCP fits into the broader AI ecosystem. There are three primary **Participants**:
 
@@ -61,7 +60,7 @@ As shown below, a production-grade AI Agent is a complex, multi-layered architec
 
 ---
 
-## 💻 Prerequisites & Quick Start
+## Prerequisites & Quick Start
 
 If you are only reading the theoretical **Chapters**, no installation is required! However, to participate in the hands-on **Labs** and **Projects**, you will need:
 
@@ -83,22 +82,22 @@ npx @modelcontextprotocol/inspector python server.py
 
 ---
 
-## 📚 Curriculum Syllabus
+## Curriculum Syllabus
 
 This masterclass is designed to be highly practical. We recommend the "Read, Build, Master" approach: read a chapter, execute the corresponding lab, and finish with the capstone projects.
 
-### 📖 Theory: Chapters
+### Theory: Chapters
 *Learn the mental models and architectural patterns.*
 
-- 📍 **Level 1: Foundations**
+- **Level 1: Foundations**
   - [Chapter 1: The Big Picture](chapters/01-the-big-picture/README.md)
   - [Chapter 2: Environment Setup](chapters/02-environment-setup/README.md)
   - [Chapter 3: The Handshake](chapters/03-the-handshake/README.md)
-- 🏗️ **Level 2: Builder**
+- **Level 2: Builder**
   - [Chapter 4: Tool Definition](chapters/04-tool-definition/README.md)
   - [Chapter 5: Resource Management](chapters/05-resource-management/README.md)
   - [Chapter 6: The Transport Layer](chapters/06-the-transport-layer/README.md)
-- 🏛️ **Level 3: Architect**
+- **Level 3: Architect**
   - [Chapter 7: Security & Auth](chapters/07-security-and-auth/README.md)
   - [Chapter 8: Prompts & Templates](chapters/08-prompts-and-templates/README.md)
   - [Chapter 9: Real-World Integration](chapters/09-real-world-integration/README.md)
@@ -106,28 +105,28 @@ This masterclass is designed to be highly practical. We recommend the "Read, Bui
   - [Chapter 11: Client & Orchestration](chapters/11-client-and-orchestration/README.md)
   - [Chapter 12: Advanced Architecture](chapters/12-advanced-mastery/README.md)
 
-### 🔬 Practice: Labs
+### Practice: Labs
 *Build and test the core primitives locally.*
 
-- 🧪 [Lab 1: Run MCP locally](labs/lab-01-hello-mcp/README.md)
-- 🧪 [Lab 2: Build a tool server](labs/lab-02-tool-server/README.md)
-- 🧪 [Lab 3: Add resource context](labs/lab-03-resource-server/README.md)
-- 🧪 [Lab 4: Prompts & Templates](labs/lab-04-prompts-and-templates/README.md)
-- 🧪 [Lab 5: Add security layer](labs/lab-05-secure-tools/README.md)
-- 🧪 [Lab 6: Multi-server orchestration](labs/lab-06-multi-server-agent/README.md)
-- 🧪 [Lab 7: GDPR PII Gateway & EU AI Act Audit Logger](labs/lab-07-gdpr-pii-gateway/README.md)
+- [Lab 1: Run MCP locally](labs/lab-01-hello-mcp/README.md)
+- [Lab 2: Build a tool server](labs/lab-02-tool-server/README.md)
+- [Lab 3: Add resource context](labs/lab-03-resource-server/README.md)
+- [Lab 4: Prompts & Templates](labs/lab-04-prompts-and-templates/README.md)
+- [Lab 5: Add security layer](labs/lab-05-secure-tools/README.md)
+- [Lab 6: Multi-server orchestration](labs/lab-06-multi-server-agent/README.md)
+- [Lab 7: GDPR PII Gateway & EU AI Act Audit Logger](labs/lab-07-gdpr-pii-gateway/README.md)
 
-### 🏆 Mastery: Capstone Projects
+### Mastery: Capstone Projects
 *See how enterprise micro-servers orchestrate together to solve complex domain problems.*
 
-- 💻 **[AI Dev Assistant](projects/ai-dev-assistant/README.md)** - Expose Git and linters; build an agent that fixes its own bugs.
-- 🏥 **[Clinical Copilot](projects/clinical-copilot/README.md)** - Implement zero-trust PII scrubbing and Human-in-the-Loop workflows for healthcare data.
-- 📊 **[Data Agent](projects/data-agent/README.md)** - Turn an LLM into a SQL analyst by streaming database schemas via Resources.
-- 🗺️ **[Maps Grounding Agent](projects/maps-grounding-agent/README.md)** - Ground your AI in reality using the official Google Maps MCP server.
+- **[AI Dev Assistant](projects/ai-dev-assistant/README.md)** - Expose Git and linters; build an agent that fixes its own bugs.
+- **[Clinical Copilot](projects/clinical-copilot/README.md)** - Implement zero-trust PII scrubbing and Human-in-the-Loop workflows for healthcare data.
+- **[Data Agent](projects/data-agent/README.md)** - Turn an LLM into a SQL analyst by streaming database schemas via Resources.
+- **[Maps Grounding Agent](projects/maps-grounding-agent/README.md)** - Ground your AI in reality using the official Google Maps MCP server.
 
 ---
 
-## 🤝 Recommended Ecosystem Tools
+## Recommended Ecosystem Tools
 
 To get the most out of MCP, we highly recommend integrating with these powerful frameworks:
 
@@ -136,7 +135,7 @@ To get the most out of MCP, we highly recommend integrating with these powerful 
 
 ---
 
-## 🛠️ Contributing
+## Contributing
 
 We welcome contributions! If you have ideas for new labs, improvements to existing chapters, or bug fixes:
 1. Fork the repository.
@@ -147,7 +146,7 @@ We welcome contributions! If you have ideas for new labs, improvements to existi
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 

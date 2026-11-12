@@ -3,7 +3,7 @@
 ## Objective
 Learn how to build practical MCP tools using complex input schemas, automatic validation, and Pydantic models.
 
-## 🛠 Prerequisites
+## Prerequisites
 - Completion of Lab 1
 - Python 3.10+
 
@@ -73,5 +73,5 @@ if __name__ == "__main__":
 3. Go to the **Tools** tab. Look at the JSON Schema generated for `get_current_weather`. Notice how the descriptions from your `Field` declarations are perfectly translated to help the AI model understand the parameters!
 4. **Try breaking it:** Attempt to execute the tool *without* providing the required `city` parameter. FastMCP will automatically reject the request and return a validation error before your function even runs.
 
-## 🎉 Success!
+## Success!
 You now know how to design robust, type-safe tools that guide AI models toward successful execution. In Lab 3, we will add Resources to provide read-only context.
